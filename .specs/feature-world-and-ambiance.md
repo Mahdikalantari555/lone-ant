@@ -1,7 +1,7 @@
 ---
 title: "Feature: World and Ambiance (V1 design emphasis)"
 status: in-review
-parent: lone-ant-spec.md
+parent: spec.md
 ---
 
 # World and Ambiance (V1 design emphasis)
@@ -86,7 +86,7 @@ Warm pixel-farm glow of *Stardew Valley*/*Sprout Lands* × gentle wandering of *
 
 - ✅ Always: drive visuals from the shared colony/world state; keep the palette to one swatch file; respect the animation budget.
 - ⚠️ Ask first: adding audio/music beyond simple sound; art beyond the brief's palette/tiles.
-- 🚫 Never: fractional zoom (shimmer); rotate pixel sprites for facing; let ambiance break the frame budget (see A4 in [lone-ant-spec.md](lone-ant-spec.md)); require accounts/network to render the world.
+- 🚫 Never: fractional zoom (shimmer); rotate pixel sprites for facing; let ambiance break the frame budget (see A4 in [spec.md](spec.md)); require accounts/network to render the world.
 
 ## Edge Cases
 

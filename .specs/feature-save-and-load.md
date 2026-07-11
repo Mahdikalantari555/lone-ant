@@ -1,7 +1,7 @@
 ---
 title: "Feature: Save and Load"
 status: deferred-v2
-parent: lone-ant-spec.md
+parent: spec.md
 ---
 
 # Save and Load

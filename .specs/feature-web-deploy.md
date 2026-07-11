@@ -1,7 +1,7 @@
 ---
 title: "Feature: Web Deploy"
 status: in-review
-parent: lone-ant-spec.md
+parent: spec.md
 ---
 
 # Web Deploy

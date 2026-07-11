@@ -1,7 +1,7 @@
 ---
 title: "Feature: Worker Ants and Pheromones"
 status: in-review
-parent: lone-ant-spec.md
+parent: spec.md
 ---
 
 # Worker Ants and Pheromones
@@ -35,7 +35,7 @@ the player only watches, and they contribute to the same colony storage.
 
 - EC-1: No food found → workers wander/return, no crash, storage unchanged.
 - EC-2: Trail grid full → oldest/weakest cells decay; no overflow crash.
-- EC-3: Many workers → frame rate stays acceptable (see A4 in [lone-ant-spec.md](lone-ant-spec.md)).
+- EC-3: Many workers → frame rate stays acceptable (see A4 in [spec.md](spec.md)).
 
 ## Out of Scope
 
