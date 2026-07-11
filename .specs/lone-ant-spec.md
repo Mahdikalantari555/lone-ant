@@ -28,7 +28,7 @@ Hobby game tinkerers — people who enjoy poking at games and game-making more
 than being a passive user. They want a world that feels alive, something they
 can finish and show a friend, and a short loop they return to across days.
 Simple graphics/sound are fine; the feeling of being one small ant in a bigger
-living thing is what matters. See [ideas/lone-ant/application.md](../../ideas/lone-ant/application.md).
+living thing is what matters. See [ideas/lone-ant/application.md](lone-ant-application.md).
 
 ## Goals
 
@@ -63,12 +63,12 @@ visible, growing nest; ambient activity beyond the player (workers, drifting
 pheromones, small ecosystem motion); a day/night mood cycle; and some
 terrain/visual variety so the map isn't flat. The chosen direction is a
 **simple but beautiful pixel-art** style — see the full brief in
-[features/world-and-ambiance.md](features/world-and-ambiance.md) (OQ-6
+[lone-ant-feature-world-and-ambiance.md](lone-ant-feature-world-and-ambiance.md) (OQ-6
 resolved).
 
 ## Platform & tech approach
 
-- **Stack:** Browser game, Phaser 3 + TypeScript. (Exact versions pinned when implementation starts — see [features/web-deploy.md](features/web-deploy.md).)
+- **Stack:** Browser game, Phaser 3 + TypeScript. (Exact versions pinned when implementation starts — see [lone-ant-feature-web-deploy.md](lone-ant-feature-web-deploy.md).)
 - **Deploy:** Web first (hosted, opens from a link, playable on a phone). Later wrapped as an Android APK with Capacitor.
 - **Tooling:** Kilo Code edits the project; push to GitHub; GitHub Pages updates; open URL on phone to test; repeat.
 - **Offline:** No server, no account required to play. (Save/load deferred to V2.)
@@ -114,26 +114,26 @@ feature spec.
 - OQ-3 (RESOLVED): Spiders are rare by default.
 - OQ-4 (RESOLVED): Phaser 3 + TypeScript, web-first, Capacitor APK later.
 - OQ-5 (RESOLVED): Offline save is **deferred to V2**. V1 has no persistence; the save-and-load feature moves to Version 2.
-- OQ-6 (RESOLVED): "More world design" = a **simple but beautiful pixel-art** look with terrain variety (autotiles + foliage), ambient ecosystem motion (grass sway, worker greetings, reusable particles), and a visibly growing nest. Captured in [features/world-and-ambiance.md](features/world-and-ambiance.md) as a concrete style brief (16px grid, 320×576, warm limited palette, nest ring-growth, player/worker cues, violet spider with telegraph, day/night tint, diegetic HUD).
+- OQ-6 (RESOLVED): "More world design" = a **simple but beautiful pixel-art** look with terrain variety (autotiles + foliage), ambient ecosystem motion (grass sway, worker greetings, reusable particles), and a visibly growing nest. Captured in [lone-ant-feature-world-and-ambiance.md](lone-ant-feature-world-and-ambiance.md) as a concrete style brief (16px grid, 320×576, warm limited palette, nest ring-growth, player/worker cues, violet spider with telegraph, day/night tint, diegetic HUD).
 
 ## Feature specs
 
-- [features/controllable-ant.md](features/controllable-ant.md)
-- [features/foraging.md](features/foraging.md)
-- [features/worker-ants-and-pheromones.md](features/worker-ants-and-pheromones.md)
-- [features/nest-and-storage.md](features/nest-and-storage.md)
-- [features/spiders.md](features/spiders.md)
-- [features/save-and-load.md](features/save-and-load.md) — **deferred to V2**
-- [features/web-deploy.md](features/web-deploy.md)
-- [features/world-and-ambiance.md](features/world-and-ambiance.md)
+- [lone-ant-feature-controllable-ant.md](lone-ant-feature-controllable-ant.md)
+- [lone-ant-feature-foraging.md](lone-ant-feature-foraging.md)
+- [lone-ant-feature-worker-ants-and-pheromones.md](lone-ant-feature-worker-ants-and-pheromones.md)
+- [lone-ant-feature-nest-and-storage.md](lone-ant-feature-nest-and-storage.md)
+- [lone-ant-feature-spiders.md](lone-ant-feature-spiders.md)
+- [lone-ant-feature-save-and-load.md](lone-ant-feature-save-and-load.md) — **deferred to V2**
+- [lone-ant-feature-web-deploy.md](lone-ant-feature-web-deploy.md)
+- [lone-ant-feature-world-and-ambiance.md](lone-ant-feature-world-and-ambiance.md)
 
 ## Source map
 
 Grew from:
 
-- [ideas/lone-ant/concept.md](../../ideas/lone-ant/concept.md)
-- [ideas/lone-ant/application.md](../../ideas/lone-ant/application.md)
-- [ideas/lone-ant/questions.md](../../ideas/lone-ant/questions.md)
+- [ideas/lone-ant/concept.md](lone-ant-concept.md)
+- [ideas/lone-ant/application.md](lone-ant-application.md)
+- [ideas/lone-ant/questions.md](lone-ant-questions.md)
 
 When implementation begins, link the key source files here (ant controller, pheromone system, storage, save/load, spider AI, deploy config).
 

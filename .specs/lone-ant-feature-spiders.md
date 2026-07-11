@@ -1,7 +1,7 @@
 ---
 title: "Feature: Spiders (Threat)"
 status: in-review
-parent: ../spec.md
+parent: lone-ant-spec.md
 ---
 
 # Spiders (Threat)

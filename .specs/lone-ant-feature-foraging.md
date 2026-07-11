@@ -1,7 +1,7 @@
 ---
 title: "Feature: Foraging"
 status: in-review
-parent: ../spec.md
+parent: lone-ant-spec.md
 ---
 
 # Foraging
@@ -10,7 +10,7 @@ parent: ../spec.md
 
 Carrying food from the world into the nest is the player's core activity and
 the main way colony storage grows. It is the "fun loop" the whole game rests
-on (see OQ-1 in [../spec.md](../spec.md)).
+on (see OQ-1 in [lone-ant-spec.md](lone-ant-spec.md)).
 
 ## Requirements
 

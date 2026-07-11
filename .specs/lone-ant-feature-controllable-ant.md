@@ -1,7 +1,7 @@
 ---
 title: "Feature: Controllable Ant"
 status: in-review
-parent: ../spec.md
+parent: lone-ant-spec.md
 ---
 
 # Controllable Ant
@@ -49,4 +49,4 @@ Defending the nest, steering workers, choosing dig spots (Version 2+).
 
 ## Source map
 
-Linked to: ant controller module (to be created). See [../spec.md](../spec.md#source-map).
+Linked to: ant controller module (to be created). See [lone-ant-spec.md](lone-ant-spec.md#source-map).

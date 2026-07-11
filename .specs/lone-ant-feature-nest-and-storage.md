@@ -1,7 +1,7 @@
 ---
 title: "Feature: Nest and Storage"
 status: in-review
-parent: ../spec.md
+parent: lone-ant-spec.md
 ---
 
 # Nest and Storage
