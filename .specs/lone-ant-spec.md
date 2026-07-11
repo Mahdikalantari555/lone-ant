@@ -2,14 +2,14 @@
 title: "Lone Ant — Product Specification"
 date: 2026-07-11
 status: in-review
-source_idea: ideas/lone-ant/
+source_idea: lone-ant
 ---
 
 # Lone Ant — Product Specification
 
 This is the product/overview contract. It states the *what* and *why*. Each
 behavioral area is broken into its own feature spec under
-[features/](features/) with binary, testable acceptance criteria. Code is
+the `lone-ant-feature-*.md` files with binary, testable acceptance criteria. Code is
 built against those feature specs, not against this prose.
 
 ## Purpose (why)
@@ -28,7 +28,7 @@ Hobby game tinkerers — people who enjoy poking at games and game-making more
 than being a passive user. They want a world that feels alive, something they
 can finish and show a friend, and a short loop they return to across days.
 Simple graphics/sound are fine; the feeling of being one small ant in a bigger
-living thing is what matters. See [ideas/lone-ant/application.md](lone-ant-application.md).
+living thing is what matters. See [lone-ant-application.md](lone-ant-application.md).
 
 ## Goals
 
@@ -131,15 +131,15 @@ feature spec.
 
 Grew from:
 
-- [ideas/lone-ant/concept.md](lone-ant-concept.md)
-- [ideas/lone-ant/application.md](lone-ant-application.md)
-- [ideas/lone-ant/questions.md](lone-ant-questions.md)
+- [lone-ant-concept.md](lone-ant-concept.md)
+- [lone-ant-application.md](lone-ant-application.md)
+- [lone-ant-questions.md](lone-ant-questions.md)
 
 When implementation begins, link the key source files here (ant controller, pheromone system, storage, save/load, spider AI, deploy config).
 
 ## Related docs
 
-- Source idea: [ideas/lone-ant/](../../ideas/lone-ant/)
+- Source idea: [lone-ant-concept.md](lone-ant-concept.md)
 - Forge workflow: `README.md`, and the `/new-idea`, `/new-spec`, `/archive` commands.
 
 ## Status & approval
