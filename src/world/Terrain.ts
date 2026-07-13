@@ -22,10 +22,10 @@ export class Terrain {
         const x = col * TILE;
         const y = row * TILE;
         const roll = rng.frac();
-        if (roll < 0.18) {
+        if (roll < 0.2) {
           g.fillStyle(COLORS.ground.mid, 1);
           g.fillRect(x, y, TILE, TILE);
-        } else if (roll < 0.24) {
+        } else if (roll < 0.28) {
           g.fillStyle(COLORS.ground.highlight, 1);
           g.fillRect(x, y, TILE, TILE);
         }
@@ -36,7 +36,7 @@ export class Terrain {
       }
     }
 
-    const pebbles = Math.floor((WIDTH * HEIGHT) / 900);
+    const pebbles = Math.floor((WIDTH * HEIGHT) / 600);
     for (let i = 0; i < pebbles; i++) {
       const x = rng.between(2, WIDTH - 2);
       const y = rng.between(2, HEIGHT - 2);
@@ -46,7 +46,7 @@ export class Terrain {
       g.fillCircle(x + 1, y + 1, rng.between(1, 2));
     }
 
-    const tufts = Math.floor((WIDTH * HEIGHT) / 1400);
+    const tufts = Math.floor((WIDTH * HEIGHT) / 1200);
     for (let i = 0; i < tufts; i++) {
       const x = rng.between(4, WIDTH - 4);
       const y = rng.between(4, HEIGHT - 4);
@@ -58,7 +58,7 @@ export class Terrain {
       g.fillCircle(x, y - h, 1);
     }
 
-    const twigs = Math.floor((WIDTH * HEIGHT) / 2600);
+    const twigs = Math.floor((WIDTH * HEIGHT) / 2000);
     for (let i = 0; i < twigs; i++) {
       const x = rng.between(4, WIDTH - 4);
       const y = rng.between(4, HEIGHT - 4);
@@ -66,7 +66,7 @@ export class Terrain {
       g.lineBetween(x, y, x + rng.between(3, 6), y + rng.between(-2, 2));
     }
 
-    const litter = Math.floor((WIDTH * HEIGHT) / 2200);
+    const litter = Math.floor((WIDTH * HEIGHT) / 1800);
     for (let i = 0; i < litter; i++) {
       const x = rng.between(4, WIDTH - 4);
       const y = rng.between(4, HEIGHT - 4);

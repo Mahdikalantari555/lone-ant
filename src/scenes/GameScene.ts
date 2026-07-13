@@ -31,6 +31,7 @@ export class GameScene extends Phaser.Scene {
   private spiders!: SpiderManager;
   private foliage!: Foliage;
   private dayNight!: DayNight;
+  private foodRespawnTimer = 0;
 
   constructor() {
     super("Game");
@@ -47,7 +48,7 @@ export class GameScene extends Phaser.Scene {
     new Terrain(this, this.grid);
     this.foliage = new Foliage(this, this.grid);
 
-    this.player = new PlayerAnt(this, this.nest.x, this.nest.y);
+    this.player = new PlayerAnt(this, this.nest.x, this.nest.y + 20);
     this.spawnFood();
 
     colony.bootstrap();
@@ -84,6 +85,12 @@ export class GameScene extends Phaser.Scene {
     this.spiders.update(dt);
     this.foliage.update(time);
     this.dayNight.update(time);
+
+    this.foodRespawnTimer += dt;
+    if (this.foodRespawnTimer >= 15 && this.foods.length < 8) {
+      this.foods.push(...Food.spawnCluster(this, this.grid));
+      this.foodRespawnTimer = 0;
+    }
 
     if (!this.player.carrying) {
       this.tryPickup();
@@ -134,7 +141,7 @@ export class GameScene extends Phaser.Scene {
       this.foods.push(new Food(this, this.player.x, this.player.y, this.carriedValue));
       this.carriedValue = 0;
     }
-    this.player.respawnAt(this.nest.x, this.nest.y);
+    this.player.respawnAt(this.nest.x, this.nest.y + 20);
   }
 
   private spawnFood(): void {

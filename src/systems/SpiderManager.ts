@@ -20,8 +20,11 @@ const HIT_RANGE = 11;
 
 export class SpiderManager {
   private spiders: Spider[] = [];
+  private targetRing: Phaser.GameObjects.Graphics;
 
   constructor(private scene: Phaser.Scene, count: number, private world: SpiderWorld) {
+    this.targetRing = scene.add.graphics();
+    this.targetRing.setDepth(3000);
     for (let i = 0; i < count; i++) {
       const x = Phaser.Math.Between(20, WIDTH - 20);
       const y = Phaser.Math.Between(20, HEIGHT - 120);
@@ -30,6 +33,7 @@ export class SpiderManager {
   }
 
   update(dt: number): void {
+    this.targetRing.clear();
     const player = this.world.player;
     const workers = this.world.workers.getWorkers();
 
@@ -41,6 +45,16 @@ export class SpiderManager {
         if (target && Phaser.Math.Distance.Between(spider.x, spider.y, target.x, target.y) < DETECT_RANGE) {
           spider.telegraph(target.x, target.y);
         }
+      }
+
+      if (spider.mode === "telegraph" || spider.mode === "lunge") {
+        const pulse = 0.3 + 0.3 * Math.abs(Math.sin(Date.now() / 150));
+        this.targetRing.lineStyle(1, 0xff3b3b, pulse);
+        this.targetRing.strokeCircle(spider.targetX, spider.targetY, 8 + pulse * 4);
+        this.targetRing.lineStyle(1, 0xff3b3b, pulse * 0.6);
+        this.targetRing.strokeCircle(spider.targetX, spider.targetY, 14 + pulse * 6);
+        this.targetRing.lineStyle(1, 0xff3b3b, pulse * 0.3);
+        this.targetRing.strokeCircle(spider.targetX, spider.targetY, 20 + pulse * 8);
       }
 
       if (spider.mode === "lunge" || spider.mode === "telegraph") {

@@ -6,6 +6,7 @@ import { COLORS, WIDTH, HEIGHT } from "../config/palette";
 export class PlayerAnt extends Entity {
   carrying = false;
   private halo: Phaser.GameObjects.Image;
+  private glow: Phaser.GameObjects.Image;
   private carriedFood?: Phaser.GameObjects.Image;
   private bobT = 0;
   private respawnTimer = 0;
@@ -20,6 +21,13 @@ export class PlayerAnt extends Entity {
       .setAlpha(0)
       .setScale(0.5)
       .setDepth(y - 1);
+    this.glow = scene.add
+      .image(x, y, TEX.dot)
+      .setTint(COLORS.pheromone.core)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setAlpha(0)
+      .setScale(0.3)
+      .setDepth(y - 2);
   }
 
   requestPath(points: Phaser.Math.Vector2[]): void {
@@ -47,6 +55,7 @@ export class PlayerAnt extends Entity {
     this.setPath([]);
     this.sprite.setAlpha(0.2);
     this.halo.setAlpha(0);
+    this.glow.setAlpha(0);
     this.sprite.setPosition(x, y);
   }
 
@@ -75,6 +84,13 @@ export class PlayerAnt extends Entity {
 
     this.halo.setPosition(this.x, this.y);
     this.halo.setDepth(this.y - 1);
+
+    const glowPulse = 0.15 + Math.sin(this.bobT * 2) * 0.1;
+    this.glow.setPosition(this.x, this.y);
+    this.glow.setDepth(this.y - 2);
+    this.glow.setAlpha(this.state === "respawning" ? 0 : glowPulse);
+    this.glow.setScale(0.4 + Math.sin(this.bobT * 2.5) * 0.1);
+
     if (this.carriedFood) {
       const off = Math.sin(this.bobT * 6) * 1.5;
       this.carriedFood.setPosition(this.x, this.y - 12 + off);

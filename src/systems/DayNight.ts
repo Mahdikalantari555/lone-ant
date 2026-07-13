@@ -67,7 +67,7 @@ export class DayNight {
     this.glow.setAlpha(nightFactor * 0.5);
     this.glow.setScale(6 + Math.sin(time / 600) * 0.6);
 
-    const label = t < 0.3 ? "🌅" : t < 0.55 ? "☀" : t < 0.8 ? "🌇" : "🌙";
+    const label = t < 0.15 ? "DAWN" : t < 0.45 ? "DAY" : t < 0.6 ? "DUSK" : "NIGHT";
     if (label !== this.currentLabel) {
       this.currentLabel = label;
       this.onLabel(label);

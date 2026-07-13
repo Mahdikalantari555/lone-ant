@@ -4,6 +4,11 @@ import { BootScene } from "./scenes/BootScene";
 import { PreloadScene } from "./scenes/PreloadScene";
 import { GameScene } from "./scenes/GameScene";
 
+const integerZoom = (): number => {
+  const fit = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
+  return [3, 2, 1].find((level) => level <= fit) ?? 1;
+};
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: "game",
@@ -13,9 +18,9 @@ const config: Phaser.Types.Core.GameConfig = {
   pixelArt: true,
   roundPixels: true,
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    zoom: Phaser.Scale.MAX_ZOOM,
+    zoom: integerZoom(),
   },
   render: {
     antialias: false,
@@ -26,5 +31,9 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const game = new Phaser.Game(config);
+
+window.addEventListener("resize", () => {
+  game.scale.setZoom(integerZoom());
+});
 
 (window as unknown as { game: Phaser.Game }).game = game;

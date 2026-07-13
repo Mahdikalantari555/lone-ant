@@ -6,12 +6,17 @@ import { COLORS } from "../config/palette";
 
 export class Food extends Entity {
   readonly value: number;
+  private static readonly FOOD_TYPES = [
+    { tex: TEX.foodCrumb, tints: [COLORS.food.crumbA, COLORS.food.crumbB, COLORS.food.crumbC], value: 1 },
+    { tex: TEX.foodSeed, tints: [COLORS.food.seedA, COLORS.food.seedB, COLORS.food.crumbC], value: 2 },
+    { tex: TEX.foodBerry, tints: [COLORS.food.leafA, COLORS.food.leafB, COLORS.food.crumbC], value: 1 },
+  ];
 
   constructor(scene: Phaser.Scene, x: number, y: number, value = 1) {
-    super(scene, x, y, TEX.foodCrumb);
+    const type = Food.FOOD_TYPES.find((t) => t.value === value) ?? Food.FOOD_TYPES[0];
+    super(scene, x, y, type.tex);
     this.value = value;
-    const tints = [COLORS.food.crumbA, COLORS.food.crumbB, COLORS.food.crumbC];
-    this.sprite.setTint(Phaser.Utils.Array.GetRandom(tints));
+    this.sprite.setTint(Phaser.Utils.Array.GetRandom(type.tints));
     this.sprite.setDepth(y);
   }
 

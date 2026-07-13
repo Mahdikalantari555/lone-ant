@@ -7,7 +7,7 @@ import { ColonyState } from "../state/ColonyState";
 import { Food } from "../entities/Food";
 import { COLORS } from "../config/palette";
 
-const MAX_WORKERS = 50;
+const MAX_WORKERS = 40;
 
 export class WorkerManager {
   private workers: WorkerAnt[] = [];
@@ -84,12 +84,26 @@ export class WorkerManager {
     g.clear();
     this.pheromones.forEachCell((x, y, toFood, toNest) => {
       if (toFood > 0.02) {
-        g.fillStyle(COLORS.pheromone.core, Math.min(0.6, toFood * 0.6));
-        g.fillCircle(x, y, 2 + toFood * 2);
+        const size = 2 + toFood * 3;
+        const alpha = Math.min(0.7, toFood * 0.7);
+        g.fillStyle(COLORS.pheromone.core, alpha);
+        g.fillTriangle(x, y - size, x - size, y, x, y + size);
+        g.fillTriangle(x, y - size, x + size, y, x, y + size);
+        g.fillStyle(COLORS.pheromone.mid, alpha * 0.6);
+        const inner = size * 0.5;
+        g.fillTriangle(x, y - inner, x - inner, y, x, y + inner);
+        g.fillTriangle(x, y - inner, x + inner, y, x, y + inner);
       }
       if (toNest > 0.02) {
-        g.fillStyle(COLORS.pheromone.mid, Math.min(0.5, toNest * 0.5));
-        g.fillCircle(x, y, 2 + toNest * 2);
+        const size = 2 + toNest * 3;
+        const alpha = Math.min(0.6, toNest * 0.6);
+        g.fillStyle(COLORS.pheromone.fade, alpha);
+        g.fillTriangle(x, y - size, x - size, y, x, y + size);
+        g.fillTriangle(x, y - size, x + size, y, x, y + size);
+        g.fillStyle(COLORS.pheromone.mid, alpha * 0.5);
+        const inner = size * 0.5;
+        g.fillTriangle(x, y - inner, x - inner, y, x, y + inner);
+        g.fillTriangle(x, y - inner, x + inner, y, x, y + inner);
       }
     });
   }

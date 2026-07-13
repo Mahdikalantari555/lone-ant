@@ -39,7 +39,7 @@ export class WorldGrid {
           this.walkable[this.index(col, row)] = false;
           continue;
         }
-        this.walkable[this.index(col, row)] = rng.frac() > 0.08;
+        this.walkable[this.index(col, row)] = rng.frac() > 0.04;
       }
     }
   }

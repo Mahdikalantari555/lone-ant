@@ -6,6 +6,7 @@ export interface ColonyGrowth {
 }
 
 const STORAGE_THRESHOLDS = [0, 25, 75, 150, 300];
+const WORKER_COUNTS = [1, 2, 4, 7, 10];
 
 export class ColonyState extends Phaser.Events.EventEmitter {
   private _storage = 0;
@@ -56,8 +57,11 @@ export class ColonyState extends Phaser.Events.EventEmitter {
       this._nestStage = stage;
       this.emit("nest-stage-changed", stage);
     }
-    this._workerCount = stage + 1;
-    this.emit("workers-changed", this._workerCount);
+    const newWorkerCount = WORKER_COUNTS[stage] ?? 1;
+    if (newWorkerCount !== this._workerCount) {
+      this._workerCount = newWorkerCount;
+      this.emit("workers-changed", this._workerCount);
+    }
   }
 
   static growthFor(storage: number): ColonyGrowth {
@@ -65,7 +69,7 @@ export class ColonyState extends Phaser.Events.EventEmitter {
     for (let i = 0; i < STORAGE_THRESHOLDS.length; i++) {
       if (storage >= STORAGE_THRESHOLDS[i]) stage = i;
     }
-    return { workerCount: stage + 1, nestStage: stage };
+    return { workerCount: WORKER_COUNTS[stage] ?? 1, nestStage: stage };
   }
 }
 

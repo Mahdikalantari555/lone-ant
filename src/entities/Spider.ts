@@ -7,11 +7,11 @@ export type SpiderState = "roam" | "telegraph" | "lunge" | "recover";
 
 export class Spider extends Entity {
   mode: SpiderState = "roam";
+  targetX = 0;
+  targetY = 0;
   private timer = 0;
   private wanderX: number;
   private wanderY: number;
-  private targetX: number;
-  private targetY: number;
   private glint: Phaser.GameObjects.Image;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
