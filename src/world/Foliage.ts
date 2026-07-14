@@ -22,8 +22,8 @@ export class Foliage {
       const y = rng.between(12, HEIGHT - 12);
       if (!grid.isWalkablePixel(x, y)) continue;
       const img = scene.add.image(x, y, TEX.grassTuft).setOrigin(0.5, 1);
-      img.setTint(Phaser.Utils.Array.GetRandom([COLORS.grass.mid, COLORS.grass.highlight]));
-      img.setScale(0.6 + rng.frac() * 0.4);
+      img.setTint(Phaser.Utils.Array.GetRandom([COLORS.grass.mid, COLORS.grass.hi]));
+      img.setScale(1.0 + rng.frac() * 0.5);
       img.setDepth(y);
       this.blades.push({ img, phase: rng.frac() * Math.PI * 2, baseX: x, baseY: y });
       placed++;

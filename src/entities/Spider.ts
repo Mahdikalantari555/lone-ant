@@ -13,6 +13,7 @@ export class Spider extends Entity {
   private wanderX: number;
   private wanderY: number;
   private glint: Phaser.GameObjects.Image;
+  private telegraphRing: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, TEX.spider);
@@ -23,10 +24,12 @@ export class Spider extends Entity {
     this.targetY = y;
     this.glint = scene.add
       .image(x, y, TEX.dot)
-      .setTint(COLORS.spider.warning)
+      .setTint(COLORS.spider.eye)
       .setAlpha(0)
       .setScale(1.5)
       .setDepth(y + 2);
+    this.telegraphRing = scene.add.graphics();
+    this.telegraphRing.setDepth(y + 3);
   }
 
   telegraph(x: number, y: number): void {
@@ -35,6 +38,7 @@ export class Spider extends Entity {
     this.timer = Phaser.Math.FloatBetween(0.4, 0.6);
     this.targetX = x;
     this.targetY = y;
+    this.sprite.setTexture(TEX.spiderAlert);
   }
 
   update(dt: number): void {
@@ -47,11 +51,14 @@ export class Spider extends Entity {
         if (dist < 4) this.pickWander();
         else this.moveBy((dx / dist) * this.speed * dt, (dy / dist) * this.speed * dt);
         this.glint.setAlpha(0);
+        this.telegraphRing.clear();
+        this.sprite.setTexture(TEX.spider);
         break;
       }
       case "telegraph": {
         const flicker = 0.4 + 0.6 * Math.abs(Math.sin(this.timer * 30));
         this.glint.setAlpha(flicker);
+        this.drawTelegraphRing(flicker);
         this.moveBy(0, 0);
         if (this.timer <= 0) {
           this.mode = "lunge";
@@ -65,11 +72,14 @@ export class Spider extends Entity {
         const dist = Math.hypot(dx, dy) || 1;
         this.moveBy((dx / dist) * 150 * dt, (dy / dist) * 150 * dt);
         this.glint.setAlpha(0.3);
+        this.telegraphRing.clear();
         if (this.timer <= 0) this.mode = "recover";
         break;
       }
       case "recover": {
         this.glint.setAlpha(0);
+        this.telegraphRing.clear();
+        this.sprite.setTexture(TEX.spider);
         if (this.timer <= 0) this.mode = "roam";
         break;
       }
@@ -78,6 +88,13 @@ export class Spider extends Entity {
     this.glint.setDepth(this.y + 2);
     this.sprite.setFlipX(this.targetX < this.x);
     this.sprite.setDepth(this.y);
+  }
+
+  private drawTelegraphRing(alpha: number): void {
+    this.telegraphRing.clear();
+    // Stroked ellipse ring around eyes — the fair-warning tell
+    this.telegraphRing.lineStyle(1, COLORS.spider.eye, alpha * 0.35);
+    this.telegraphRing.strokeEllipse(this.x, this.y - 1, 12, 6);
   }
 
   beginLunge(): void {
@@ -90,6 +107,7 @@ export class Spider extends Entity {
     this.mode = "recover";
     this.timer = 0.5;
     this.glint.setAlpha(0);
+    this.telegraphRing.clear();
   }
 
   private pickWander(): void {
@@ -104,6 +122,7 @@ export class Spider extends Entity {
 
   destroy(): void {
     this.glint.destroy();
+    this.telegraphRing.destroy();
     super.destroy();
   }
 }

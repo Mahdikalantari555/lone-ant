@@ -13,7 +13,7 @@ export class Terrain {
 
   private draw(): void {
     const g = this.g;
-    g.fillStyle(COLORS.ground.base, 1);
+    g.fillStyle(COLORS.dirt.base, 1);
     g.fillRect(0, 0, WIDTH, HEIGHT);
 
     const rng = new Phaser.Math.RandomDataGenerator(["lone-ant-terrain"]);
@@ -23,14 +23,14 @@ export class Terrain {
         const y = row * TILE;
         const roll = rng.frac();
         if (roll < 0.2) {
-          g.fillStyle(COLORS.ground.mid, 1);
+          g.fillStyle(COLORS.dirt.mid, 1);
           g.fillRect(x, y, TILE, TILE);
         } else if (roll < 0.28) {
-          g.fillStyle(COLORS.ground.highlight, 1);
+          g.fillStyle(COLORS.dirt.hi, 1);
           g.fillRect(x, y, TILE, TILE);
         }
         if (!this.grid.isWalkable(col, row)) {
-          g.fillStyle(COLORS.ground.shadow, 1);
+          g.fillStyle(COLORS.dirt.shadow, 1);
           g.fillRect(x, y, TILE, TILE);
         }
       }
@@ -40,9 +40,9 @@ export class Terrain {
     for (let i = 0; i < pebbles; i++) {
       const x = rng.between(2, WIDTH - 2);
       const y = rng.between(2, HEIGHT - 2);
-      g.fillStyle(COLORS.ground.highlight, 1);
+      g.fillStyle(COLORS.dirt.hi, 1);
       g.fillCircle(x, y, rng.between(1, 2));
-      g.fillStyle(COLORS.ground.shadow, 0.5);
+      g.fillStyle(COLORS.dirt.shadow, 0.5);
       g.fillCircle(x + 1, y + 1, rng.between(1, 2));
     }
 
@@ -54,7 +54,7 @@ export class Terrain {
       const h = rng.between(3, 5);
       g.lineBetween(x, y, x - 1, y - h);
       g.lineBetween(x, y, x + 1, y - h);
-      g.fillStyle(COLORS.grass.highlight, 1);
+      g.fillStyle(COLORS.grass.hi, 1);
       g.fillCircle(x, y - h, 1);
     }
 
@@ -62,7 +62,7 @@ export class Terrain {
     for (let i = 0; i < twigs; i++) {
       const x = rng.between(4, WIDTH - 4);
       const y = rng.between(4, HEIGHT - 4);
-      g.lineStyle(1, COLORS.ground.shadow, 0.8);
+      g.lineStyle(1, COLORS.dirt.shadow, 0.8);
       g.lineBetween(x, y, x + rng.between(3, 6), y + rng.between(-2, 2));
     }
 
@@ -70,7 +70,7 @@ export class Terrain {
     for (let i = 0; i < litter; i++) {
       const x = rng.between(4, WIDTH - 4);
       const y = rng.between(4, HEIGHT - 4);
-      g.fillStyle(COLORS.ground.shadow, 0.6);
+      g.fillStyle(COLORS.dirt.shadow, 0.6);
       g.fillRect(x, y, rng.between(2, 4), rng.between(2, 3));
     }
   }

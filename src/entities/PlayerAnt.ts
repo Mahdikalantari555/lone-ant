@@ -10,14 +10,16 @@ export class PlayerAnt extends Entity {
   private carriedFood?: Phaser.GameObjects.Image;
   private bobT = 0;
   private respawnTimer = 0;
+  private idleFrame = 0;
+  private idleTimer = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, TEX.playerAnt);
     this.speed = 56;
-    this.sprite.setTint(COLORS.playerAnt.body);
+    this.sprite.setScale(1.15);
     this.halo = scene.add
       .image(x, y, TEX.dot)
-      .setTint(COLORS.playerAnt.highlight)
+      .setTint(COLORS.playerAnt.hi)
       .setAlpha(0)
       .setScale(0.5)
       .setDepth(y - 1);
@@ -78,6 +80,7 @@ export class PlayerAnt extends Entity {
         break;
       }
       case "idle":
+        this.updateIdleAnimation(dt);
         this.updateHalo(0.5 + Math.sin(this.bobT * 3) * 0.3);
         break;
     }
@@ -99,6 +102,15 @@ export class PlayerAnt extends Entity {
     this.sprite.setDepth(this.y);
     this.sprite.x = Phaser.Math.Clamp(this.sprite.x, 0, WIDTH);
     this.sprite.y = Phaser.Math.Clamp(this.sprite.y, 0, HEIGHT);
+  }
+
+  private updateIdleAnimation(dt: number): void {
+    this.idleTimer += dt;
+    if (this.idleTimer >= 0.4) {
+      this.idleTimer = 0;
+      this.idleFrame = 1 - this.idleFrame;
+      this.sprite.setTexture(this.idleFrame === 0 ? TEX.playerAntIdle1 : TEX.playerAntIdle2);
+    }
   }
 
   private updateHalo(alpha: number): void {

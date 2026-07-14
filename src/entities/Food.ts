@@ -7,9 +7,9 @@ import { COLORS } from "../config/palette";
 export class Food extends Entity {
   readonly value: number;
   private static readonly FOOD_TYPES = [
-    { tex: TEX.foodCrumb, tints: [COLORS.food.crumbA, COLORS.food.crumbB, COLORS.food.crumbC], value: 1 },
-    { tex: TEX.foodSeed, tints: [COLORS.food.seedA, COLORS.food.seedB, COLORS.food.crumbC], value: 2 },
-    { tex: TEX.foodBerry, tints: [COLORS.food.leafA, COLORS.food.leafB, COLORS.food.crumbC], value: 1 },
+    { tex: TEX.foodCrumb, tints: [COLORS.food.crumbBase, COLORS.food.crumbShadow, COLORS.food.crumbHi], value: 1 },
+    { tex: TEX.foodSeed, tints: [COLORS.food.seedBase, COLORS.food.seedShadow, COLORS.food.crumbHi], value: 2 },
+    { tex: TEX.foodBerry, tints: [COLORS.food.berryBase, COLORS.food.berryShadow, COLORS.food.crumbHi], value: 1 },
   ];
 
   constructor(scene: Phaser.Scene, x: number, y: number, value = 1) {
