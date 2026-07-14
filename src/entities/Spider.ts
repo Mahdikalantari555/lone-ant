@@ -80,6 +80,15 @@ export class Spider extends Entity {
         this.glint.setAlpha(0);
         this.telegraphRing.clear();
         this.sprite.setTexture(TEX.spider);
+        // Move toward the flee point during recovery
+        {
+          const dx = this.wanderX - this.x;
+          const dy = this.wanderY - this.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 4) {
+            this.moveBy((dx / dist) * this.speed * 0.5 * dt, (dy / dist) * this.speed * 0.5 * dt);
+          }
+        }
         if (this.timer <= 0) this.mode = "roam";
         break;
       }
@@ -108,6 +117,19 @@ export class Spider extends Entity {
     this.timer = 0.5;
     this.glint.setAlpha(0);
     this.telegraphRing.clear();
+    // After a miss, flee far from the attack point so we don't re-detect immediately
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 80 + Math.random() * 40;
+    this.wanderX = Phaser.Math.Clamp(
+      this.targetX + Math.cos(angle) * dist,
+      12,
+      WIDTH - 12,
+    );
+    this.wanderY = Phaser.Math.Clamp(
+      this.targetY + Math.sin(angle) * dist,
+      12,
+      HEIGHT - 12,
+    );
   }
 
   private pickWander(): void {
