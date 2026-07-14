@@ -23,6 +23,7 @@ export const COLORS = {
     base: 0x6b4530,
     highlight: 0x8f6244,
     rimGlow: 0xd9b076,
+    hole: 0x1e140f,
   },
   playerAnt: {
     body: 0xa8432b,

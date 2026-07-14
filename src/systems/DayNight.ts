@@ -64,8 +64,8 @@ export class DayNight {
     this.overlay.setFillStyle(colorInt, alpha);
 
     const nightFactor = Phaser.Math.Clamp((alpha - 0.1) / 0.45, 0, 1);
-    this.glow.setAlpha(nightFactor * 0.5);
-    this.glow.setScale(6 + Math.sin(time / 600) * 0.6);
+    this.glow.setAlpha(nightFactor * 0.6);
+    this.glow.setScale(7 + Math.sin(time / 600) * 0.8);
 
     const label = t < 0.15 ? "DAWN" : t < 0.45 ? "DAY" : t < 0.6 ? "DUSK" : "NIGHT";
     if (label !== this.currentLabel) {
