@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Entity } from "./Entity";
 import { TEX } from "../systems/TextureFactory";
-import { COLORS, WIDTH, HEIGHT } from "../config/palette";
+import { COLORS, SPIDER_AREA_TOP, SPIDER_AREA_LEFT, SPIDER_AREA_RIGHT, SPIDER_AREA_BOTTOM } from "../config/palette";
 
 export type SpiderState = "roam" | "telegraph" | "lunge" | "recover";
 
@@ -122,24 +122,24 @@ export class Spider extends Entity {
     const dist = 80 + Math.random() * 40;
     this.wanderX = Phaser.Math.Clamp(
       this.targetX + Math.cos(angle) * dist,
-      12,
-      WIDTH - 12,
+      SPIDER_AREA_LEFT,
+      SPIDER_AREA_RIGHT,
     );
     this.wanderY = Phaser.Math.Clamp(
       this.targetY + Math.sin(angle) * dist,
-      12,
-      HEIGHT - 12,
+      SPIDER_AREA_TOP,
+      SPIDER_AREA_BOTTOM,
     );
   }
 
   private pickWander(): void {
-    this.wanderX = Phaser.Math.Clamp(this.x + Phaser.Math.Between(-50, 50), 12, WIDTH - 12);
-    this.wanderY = Phaser.Math.Clamp(this.y + Phaser.Math.Between(-50, 50), 12, HEIGHT - 12);
+    this.wanderX = Phaser.Math.Clamp(this.x + Phaser.Math.Between(-50, 50), SPIDER_AREA_LEFT, SPIDER_AREA_RIGHT);
+    this.wanderY = Phaser.Math.Clamp(this.y + Phaser.Math.Between(-50, 50), SPIDER_AREA_TOP, SPIDER_AREA_BOTTOM);
   }
 
   private moveBy(dx: number, dy: number): void {
-    this.sprite.x += dx;
-    this.sprite.y += dy;
+    this.sprite.x = Phaser.Math.Clamp(this.sprite.x + dx, SPIDER_AREA_LEFT, SPIDER_AREA_RIGHT);
+    this.sprite.y = Phaser.Math.Clamp(this.sprite.y + dy, SPIDER_AREA_TOP, SPIDER_AREA_BOTTOM);
   }
 
   destroy(): void {

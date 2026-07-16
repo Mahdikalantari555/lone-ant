@@ -4,6 +4,10 @@ export const TILE = 16;
 export const GRID_COLS = WIDTH / TILE;
 export const GRID_ROWS = HEIGHT / TILE;
 export const SPIDER_COUNT = 1;
+export const SPIDER_AREA_TOP = 144;
+export const SPIDER_AREA_LEFT = 10;
+export const SPIDER_AREA_RIGHT = 310;
+export const SPIDER_AREA_BOTTOM = 564;
 
 export const COLORS = {
   dirt: {

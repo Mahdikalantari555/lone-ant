@@ -5,8 +5,7 @@ export interface ColonyGrowth {
   nestStage: number;
 }
 
-const STORAGE_THRESHOLDS = [0, 25, 75, 150, 300];
-const WORKER_COUNTS = [1, 2, 4, 7, 10];
+const NEST_THRESHOLDS = [0, 10, 30, 60];
 
 export class ColonyState extends Phaser.Events.EventEmitter {
   private _storage = 0;
@@ -32,6 +31,13 @@ export class ColonyState extends Phaser.Events.EventEmitter {
     this.emit("storage-changed", this._storage);
   }
 
+  removeFood(amount: number): void {
+    if (amount <= 0) return;
+    this._storage = Math.max(0, this._storage - amount);
+    this.recomputeGrowth();
+    this.emit("storage-changed", this._storage);
+  }
+
   setWorkerCount(count: number): void {
     this._workerCount = Math.max(0, count);
     this.emit("workers-changed", this._workerCount);
@@ -50,14 +56,14 @@ export class ColonyState extends Phaser.Events.EventEmitter {
 
   private recomputeGrowth(): void {
     let stage = 0;
-    for (let i = 0; i < STORAGE_THRESHOLDS.length; i++) {
-      if (this._storage >= STORAGE_THRESHOLDS[i]) stage = i;
+    for (let i = 0; i < NEST_THRESHOLDS.length; i++) {
+      if (this._storage >= NEST_THRESHOLDS[i]) stage = i;
     }
     if (stage !== this._nestStage) {
       this._nestStage = stage;
       this.emit("nest-stage-changed", stage);
     }
-    const newWorkerCount = WORKER_COUNTS[stage] ?? 1;
+    const newWorkerCount = Math.floor(this._storage / 5);
     if (newWorkerCount !== this._workerCount) {
       this._workerCount = newWorkerCount;
       this.emit("workers-changed", this._workerCount);
@@ -66,10 +72,10 @@ export class ColonyState extends Phaser.Events.EventEmitter {
 
   static growthFor(storage: number): ColonyGrowth {
     let stage = 0;
-    for (let i = 0; i < STORAGE_THRESHOLDS.length; i++) {
-      if (storage >= STORAGE_THRESHOLDS[i]) stage = i;
+    for (let i = 0; i < NEST_THRESHOLDS.length; i++) {
+      if (storage >= NEST_THRESHOLDS[i]) stage = i;
     }
-    return { workerCount: WORKER_COUNTS[stage] ?? 1, nestStage: stage };
+    return { workerCount: Math.floor(storage / 5), nestStage: stage };
   }
 }
 

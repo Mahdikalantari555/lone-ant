@@ -4,8 +4,9 @@ import { PlayerAnt } from "../entities/PlayerAnt";
 import { WorkerAnt } from "../entities/WorkerAnt";
 import { WorkerManager } from "./WorkerManager";
 import { Food } from "../entities/Food";
+import { SPIDER_AREA_LEFT, SPIDER_AREA_RIGHT, SPIDER_AREA_TOP, SPIDER_AREA_BOTTOM } from "../config/palette";
 import { Nest } from "../world/Nest";
-import { WIDTH, HEIGHT } from "../config/palette";
+import { colony } from "../state/ColonyState";
 
 export interface SpiderWorld {
   player: PlayerAnt;
@@ -26,8 +27,8 @@ export class SpiderManager {
     this.targetRing = scene.add.graphics();
     this.targetRing.setDepth(3000);
     for (let i = 0; i < count; i++) {
-      const x = Phaser.Math.Between(20, WIDTH - 20);
-      const y = Phaser.Math.Between(20, HEIGHT - 120);
+      const x = Phaser.Math.Between(SPIDER_AREA_LEFT, SPIDER_AREA_RIGHT);
+      const y = Phaser.Math.Between(SPIDER_AREA_TOP, SPIDER_AREA_BOTTOM);
       this.spiders.push(new Spider(scene, x, y));
     }
   }
@@ -62,6 +63,7 @@ export class SpiderManager {
           const d = Phaser.Math.Distance.Between(spider.x, spider.y, player.x, player.y);
           if (d < HIT_RANGE) {
             this.world.onPlayerCaught();
+            colony.removeFood(5);
             spider.recover();
             continue;
           }
@@ -74,6 +76,7 @@ export class SpiderManager {
               this.world.foods.push(new Food(this.scene, w.x, w.y, w.carryingValue));
             }
             this.world.workers.removeWorker(w);
+            colony.removeFood(5);
             spider.recover();
             break;
           }
