@@ -3,6 +3,13 @@ import { Entity } from "./Entity";
 import { TEX } from "../systems/TextureFactory";
 import { COLORS, WIDTH, HEIGHT } from "../config/palette";
 
+const WALK_KEYS = [
+  TEX.playerAntWalk1,
+  TEX.playerAntWalk2,
+  TEX.playerAntWalk3,
+  TEX.playerAntWalk4,
+] as const;
+
 export class PlayerAnt extends Entity {
   carrying = false;
   private halo: Phaser.GameObjects.Image;
@@ -12,6 +19,8 @@ export class PlayerAnt extends Entity {
   private respawnTimer = 0;
   private idleFrame = 0;
   private idleTimer = 0;
+  private walkFrame = 0;
+  private walkTimer = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, TEX.playerAnt);
@@ -25,7 +34,7 @@ export class PlayerAnt extends Entity {
       .setDepth(y - 1);
     this.glow = scene.add
       .image(x, y, TEX.dot)
-      .setTint(COLORS.pheromone.core)
+      .setTint(COLORS.playerAnt.hi)
       .setBlendMode(Phaser.BlendModes.ADD)
       .setAlpha(0)
       .setScale(0.3)
@@ -75,7 +84,12 @@ export class PlayerAnt extends Entity {
       case "moving":
       case "carrying": {
         const arrived = this.followPath(dt);
-        if (arrived) this.state = this.carrying ? "carrying" : "idle";
+        if (arrived) {
+          this.state = this.carrying ? "carrying" : "idle";
+          if (!this.carrying) this.sprite.setTexture(TEX.playerAntIdle1);
+        } else {
+          this.updateWalkAnimation(dt);
+        }
         this.updateHalo(0);
         break;
       }
@@ -88,11 +102,11 @@ export class PlayerAnt extends Entity {
     this.halo.setPosition(this.x, this.y);
     this.halo.setDepth(this.y - 1);
 
-    const glowPulse = 0.15 + Math.sin(this.bobT * 2) * 0.1;
+    const glowPulse = 0.18 + Math.sin(this.bobT * 2) * 0.1;
     this.glow.setPosition(this.x, this.y);
     this.glow.setDepth(this.y - 2);
     this.glow.setAlpha(this.state === "respawning" ? 0 : glowPulse);
-    this.glow.setScale(0.4 + Math.sin(this.bobT * 2.5) * 0.1);
+    this.glow.setScale(0.45 + Math.sin(this.bobT * 2.5) * 0.1);
 
     if (this.carriedFood) {
       const off = Math.sin(this.bobT * 6) * 1.5;
@@ -102,6 +116,15 @@ export class PlayerAnt extends Entity {
     this.sprite.setDepth(this.y);
     this.sprite.x = Phaser.Math.Clamp(this.sprite.x, 0, WIDTH);
     this.sprite.y = Phaser.Math.Clamp(this.sprite.y, 0, HEIGHT);
+  }
+
+  private updateWalkAnimation(dt: number): void {
+    this.walkTimer += dt;
+    if (this.walkTimer >= 0.1) {
+      this.walkTimer = 0;
+      this.walkFrame = (this.walkFrame + 1) % WALK_KEYS.length;
+      this.sprite.setTexture(WALK_KEYS[this.walkFrame]);
+    }
   }
 
   private updateIdleAnimation(dt: number): void {

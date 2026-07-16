@@ -37,16 +37,16 @@ export class Hud {
     // Top-left chip: food icon + storage count
     this.drawChip(this.bgGraphics, PAD, PAD, 72, CHIP_H);
     scene.add
-      .image(PAD + 6, PAD + CHIP_H / 2, TEX.foodCrumb)
+      .image(PAD + 12, PAD + CHIP_H / 2, TEX.foodCrumb)
       .setScrollFactor(0)
       .setDepth(2000)
-      .setScale(3);
+      .setScale(2.5);
     this.storageText = scene.add
-      .text(PAD + 20, PAD + 6, "", numStyle)
+      .text(PAD + 24, PAD + 6, "", numStyle)
       .setScrollFactor(0)
       .setDepth(2001);
     scene.add
-      .text(PAD + 20, PAD + 18, "stored", labelStyle)
+      .text(PAD + 24, PAD + 18, "stored", labelStyle)
       .setScrollFactor(0)
       .setDepth(2001);
 
@@ -54,11 +54,10 @@ export class Hud {
     const cx = WIDTH / 2;
     this.drawChip(this.bgGraphics, cx - 22, PAD, 44, CHIP_H);
     this.dayIcon = scene.add
-      .image(cx, PAD + 10, TEX.dot)
+      .image(cx, PAD + 11, TEX.hudSun)
       .setScrollFactor(0)
       .setDepth(2000)
-      .setScale(0.4)
-      .setTint(COLORS.tint.dawn);
+      .setScale(1.2);
     this.dayLabel = scene.add
       .text(cx, PAD + 20, "DAY", labelStyle)
       .setOrigin(0.5, 0)
@@ -69,16 +68,16 @@ export class Hud {
     const rx = WIDTH - PAD - 72;
     this.drawChip(this.bgGraphics, rx, PAD, 72, CHIP_H);
     scene.add
-      .image(rx + 6, PAD + CHIP_H / 2, TEX.workerAnt)
+      .image(rx + 12, PAD + CHIP_H / 2, TEX.workerAnt)
       .setScrollFactor(0)
       .setDepth(2000)
-      .setScale(3);
+      .setScale(1.6);
     this.colonyText = scene.add
-      .text(rx + 20, PAD + 6, "", numStyle)
+      .text(rx + 24, PAD + 6, "", numStyle)
       .setScrollFactor(0)
       .setDepth(2001);
     scene.add
-      .text(rx + 20, PAD + 18, "colony", labelStyle)
+      .text(rx + 24, PAD + 18, "colony", labelStyle)
       .setScrollFactor(0)
       .setDepth(2001);
 
@@ -98,14 +97,18 @@ export class Hud {
 
   setDayLabel(label: string): void {
     this.dayLabel.setText(label);
-    if (label === "DAY") {
-      this.dayIcon.setTint(COLORS.tint.noon);
-    } else if (label === "NIGHT") {
-      this.dayIcon.setTint(COLORS.tint.night);
-    } else if (label === "DAWN") {
-      this.dayIcon.setTint(COLORS.tint.dawn);
+    if (label === "NIGHT") {
+      this.dayIcon.setTexture(TEX.hudMoon);
+      this.dayIcon.clearTint();
     } else if (label === "DUSK") {
+      this.dayIcon.setTexture(TEX.hudSun);
       this.dayIcon.setTint(COLORS.tint.dusk);
+    } else if (label === "DAWN") {
+      this.dayIcon.setTexture(TEX.hudSun);
+      this.dayIcon.setTint(COLORS.tint.dawn);
+    } else {
+      this.dayIcon.setTexture(TEX.hudSun);
+      this.dayIcon.clearTint();
     }
   }
 

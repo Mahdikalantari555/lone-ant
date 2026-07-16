@@ -1,11 +1,10 @@
 import Phaser from "phaser";
 import { WIDTH, HEIGHT, COLORS, DAY_NIGHT_TINTS } from "../config/palette";
 import { Nest } from "../world/Nest";
-import { TEX } from "../systems/TextureFactory";
+import { TEX } from "./TextureFactory";
 
 const DAY_LENGTH_MS = 600_000;
-const FIREFLY_COUNT = 12;
-const FIREFLY_RANGE = 60;
+const FIREFLY_COUNT = 16;
 
 interface Stop {
   pos: number;
@@ -61,21 +60,24 @@ export class DayNight {
   private spawnFireflies(scene: Phaser.Scene): void {
     const rng = new Phaser.Math.RandomDataGenerator(["fireflies"]);
     for (let i = 0; i < FIREFLY_COUNT; i++) {
+      const nearNest = i < 6;
+      const x = nearNest
+        ? this.nest.x + rng.between(-70, 70)
+        : rng.between(16, WIDTH - 16);
+      const y = nearNest
+        ? this.nest.y + rng.between(-70, 70)
+        : rng.between(16, HEIGHT - 16);
       const img = scene.add
-        .image(
-          this.nest.x + rng.between(-FIREFLY_RANGE, FIREFLY_RANGE),
-          this.nest.y + rng.between(-FIREFLY_RANGE, FIREFLY_RANGE),
-          TEX.dot,
-        )
+        .image(x, y, TEX.dot)
         .setTint(COLORS.tint.warmLight)
         .setBlendMode(Phaser.BlendModes.ADD)
-        .setScale(0.15 + rng.frac() * 0.1)
+        .setScale(0.12 + rng.frac() * 0.12)
         .setAlpha(0)
         .setDepth(1600);
       this.fireflies.push({
         img,
-        baseX: img.x,
-        baseY: img.y,
+        baseX: x,
+        baseY: y,
         phase: rng.frac() * Math.PI * 2,
         driftPhase: rng.frac() * Math.PI * 2,
         driftSpeed: 0.3 + rng.frac() * 0.5,
@@ -104,15 +106,14 @@ export class DayNight {
     this.overlay.setFillStyle(colorInt, alpha);
 
     this.nightFactor = Phaser.Math.Clamp((alpha - 0.1) / 0.45, 0, 1);
-    this.nestGlow.setAlpha(this.nightFactor * 0.6);
+    this.nestGlow.setAlpha(this.nightFactor * 0.65);
     this.nestGlow.setScale(7 + Math.sin(time / 600) * 0.8);
 
-    // Fireflies visible at night
     for (const ff of this.fireflies) {
       const flicker = Math.sin(time / 400 + ff.phase) * 0.5 + 0.5;
-      ff.img.setAlpha(this.nightFactor * flicker * 0.7);
-      ff.img.x = ff.baseX + Math.sin(time / 1200 + ff.driftPhase) * 8;
-      ff.img.y = ff.baseY + Math.cos(time / 900 + ff.driftPhase * 1.3) * 6;
+      ff.img.setAlpha(this.nightFactor * flicker * 0.75);
+      ff.img.x = ff.baseX + Math.sin(time / 1200 + ff.driftPhase) * 10 * ff.driftSpeed;
+      ff.img.y = ff.baseY + Math.cos(time / 900 + ff.driftPhase * 1.3) * 8 * ff.driftSpeed;
     }
 
     const label = t < 0.15 ? "DAWN" : t < 0.45 ? "DAY" : t < 0.6 ? "DUSK" : "NIGHT";

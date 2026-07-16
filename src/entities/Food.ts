@@ -4,19 +4,25 @@ import { TEX } from "../systems/TextureFactory";
 import { WorldGrid, cellToPixel } from "../world/WorldGrid";
 import { COLORS } from "../config/palette";
 
+const FOOD_TYPES = [
+  { tex: TEX.foodCrumb, tints: [COLORS.food.crumbBase, COLORS.food.crumbShadow, COLORS.food.crumbHi], value: 1 },
+  { tex: TEX.foodSeed, tints: [COLORS.food.seedBase, COLORS.food.seedShadow], value: 2 },
+  { tex: TEX.foodBerry, tints: [COLORS.food.berryBase, COLORS.food.berryShadow], value: 1 },
+] as const;
+
 export class Food extends Entity {
   readonly value: number;
-  private static readonly FOOD_TYPES = [
-    { tex: TEX.foodCrumb, tints: [COLORS.food.crumbBase, COLORS.food.crumbShadow, COLORS.food.crumbHi], value: 1 },
-    { tex: TEX.foodSeed, tints: [COLORS.food.seedBase, COLORS.food.seedShadow, COLORS.food.crumbHi], value: 2 },
-    { tex: TEX.foodBerry, tints: [COLORS.food.berryBase, COLORS.food.berryShadow, COLORS.food.crumbHi], value: 1 },
-  ];
+  readonly spriteTexture: string;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, value = 1) {
-    const type = Food.FOOD_TYPES.find((t) => t.value === value) ?? Food.FOOD_TYPES[0];
+  constructor(scene: Phaser.Scene, x: number, y: number, value = 1, typeIndex?: number) {
+    const type =
+      typeIndex !== undefined
+        ? FOOD_TYPES[typeIndex]
+        : FOOD_TYPES.find((t) => t.value === value && t.tex !== TEX.foodBerry) ?? FOOD_TYPES[0];
     super(scene, x, y, type.tex);
-    this.value = value;
-    this.sprite.setTint(Phaser.Utils.Array.GetRandom(type.tints));
+    this.value = type.value;
+    this.spriteTexture = type.tex;
+    this.sprite.setTint(Phaser.Utils.Array.GetRandom([...type.tints]));
     this.sprite.setDepth(y);
   }
 
@@ -31,7 +37,8 @@ export class Food extends Entity {
       const x = Phaser.Math.Clamp(center.x + ox, 8, 312);
       const y = Phaser.Math.Clamp(center.y + oy, 8, 568);
       if (grid.isWalkablePixel(x, y)) {
-        foods.push(new Food(scene, x, y, rng.between(1, 2)));
+        const typeIndex = rng.pick([0, 0, 0, 1, 1, 2]) as number;
+        foods.push(new Food(scene, x, y, FOOD_TYPES[typeIndex].value, typeIndex));
       }
     }
     return foods;

@@ -1,77 +1,22 @@
 import Phaser from "phaser";
-import { WIDTH, HEIGHT, TILE, COLORS } from "../config/palette";
+import { TILE, COLORS } from "../config/palette";
 import { WorldGrid } from "./WorldGrid";
+import { GROUND_TILE_KEYS } from "../systems/TextureFactory";
 
 export class Terrain {
-  private g: Phaser.GameObjects.Graphics;
-
   constructor(scene: Phaser.Scene, private grid: WorldGrid) {
-    this.g = scene.add.graphics();
-    this.g.setDepth(0);
-    this.draw();
-  }
-
-  private draw(): void {
-    const g = this.g;
-    g.fillStyle(COLORS.dirt.base, 1);
-    g.fillRect(0, 0, WIDTH, HEIGHT);
-
     const rng = new Phaser.Math.RandomDataGenerator(["lone-ant-terrain"]);
+
     for (let row = 0; row < this.grid.rows; row++) {
       for (let col = 0; col < this.grid.cols; col++) {
-        const x = col * TILE;
-        const y = row * TILE;
-        const roll = rng.frac();
-        if (roll < 0.2) {
-          g.fillStyle(COLORS.dirt.mid, 1);
-          g.fillRect(x, y, TILE, TILE);
-        } else if (roll < 0.28) {
-          g.fillStyle(COLORS.dirt.hi, 1);
-          g.fillRect(x, y, TILE, TILE);
-        }
+        const x = col * TILE + TILE / 2;
+        const y = row * TILE + TILE / 2;
+        const key = GROUND_TILE_KEYS[rng.between(0, GROUND_TILE_KEYS.length - 1)];
+        const tile = scene.add.image(x, y, key).setDepth(0);
         if (!this.grid.isWalkable(col, row)) {
-          g.fillStyle(COLORS.dirt.shadow, 1);
-          g.fillRect(x, y, TILE, TILE);
+          tile.setTint(COLORS.dirt.shadow);
         }
       }
-    }
-
-    const pebbles = Math.floor((WIDTH * HEIGHT) / 600);
-    for (let i = 0; i < pebbles; i++) {
-      const x = rng.between(2, WIDTH - 2);
-      const y = rng.between(2, HEIGHT - 2);
-      g.fillStyle(COLORS.dirt.hi, 1);
-      g.fillCircle(x, y, rng.between(1, 2));
-      g.fillStyle(COLORS.dirt.shadow, 0.5);
-      g.fillCircle(x + 1, y + 1, rng.between(1, 2));
-    }
-
-    const tufts = Math.floor((WIDTH * HEIGHT) / 1200);
-    for (let i = 0; i < tufts; i++) {
-      const x = rng.between(4, WIDTH - 4);
-      const y = rng.between(4, HEIGHT - 4);
-      g.lineStyle(1, COLORS.grass.mid, 1);
-      const h = rng.between(3, 5);
-      g.lineBetween(x, y, x - 1, y - h);
-      g.lineBetween(x, y, x + 1, y - h);
-      g.fillStyle(COLORS.grass.hi, 1);
-      g.fillCircle(x, y - h, 1);
-    }
-
-    const twigs = Math.floor((WIDTH * HEIGHT) / 2000);
-    for (let i = 0; i < twigs; i++) {
-      const x = rng.between(4, WIDTH - 4);
-      const y = rng.between(4, HEIGHT - 4);
-      g.lineStyle(1, COLORS.dirt.shadow, 0.8);
-      g.lineBetween(x, y, x + rng.between(3, 6), y + rng.between(-2, 2));
-    }
-
-    const litter = Math.floor((WIDTH * HEIGHT) / 1800);
-    for (let i = 0; i < litter; i++) {
-      const x = rng.between(4, WIDTH - 4);
-      const y = rng.between(4, HEIGHT - 4);
-      g.fillStyle(COLORS.dirt.shadow, 0.6);
-      g.fillRect(x, y, rng.between(2, 4), rng.between(2, 3));
     }
   }
 }

@@ -4,7 +4,7 @@ import { TEX } from "../systems/TextureFactory";
 import { PheromoneGrid } from "../systems/PheromoneGrid";
 import { WorldGrid } from "../world/WorldGrid";
 import { Nest } from "../world/Nest";
-import { COLORS, WIDTH, HEIGHT } from "../config/palette";
+import { WIDTH, HEIGHT } from "../config/palette";
 import { Food } from "./Food";
 import { CollisionSystem } from "../systems/CollisionSystem";
 
@@ -17,6 +17,13 @@ export interface WorkerContext {
   foods: Food[];
 }
 
+const WALK_KEYS = [
+  TEX.workerAntWalk1,
+  TEX.workerAntWalk2,
+  TEX.workerAntWalk3,
+  TEX.workerAntWalk4,
+] as const;
+
 export class WorkerAnt extends Entity {
   mode: WorkerState = "seeking";
   carrying = false;
@@ -26,13 +33,18 @@ export class WorkerAnt extends Entity {
   private wanderY: number;
   private retargetT = 0;
   private carriedDot?: Phaser.GameObjects.Image;
+  private walkFrame = 0;
+  private walkTimer = 0;
+  private lastX: number;
+  private lastY: number;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, TEX.workerAnt);
-    this.sprite.setScale(0.7);
-    this.sprite.setTint(COLORS.workerAnt.body);
+    this.sprite.setScale(0.9);
     this.wanderX = x;
     this.wanderY = y;
+    this.lastX = x;
+    this.lastY = y;
   }
 
   pickUp(food: Food): void {
@@ -41,8 +53,8 @@ export class WorkerAnt extends Entity {
     this.mode = "returning";
     if (!this.carriedDot) {
       this.carriedDot = this.scene.add
-        .image(this.x, this.y - 8, TEX.foodCrumb)
-        .setScale(0.7)
+        .image(this.x, this.y - 8, food.spriteTexture)
+        .setScale(0.85)
         .setDepth(this.y + 1);
     }
   }
@@ -81,6 +93,12 @@ export class WorkerAnt extends Entity {
     this.sprite.setPosition(nx, ny);
     this.sprite.setFlipX(dx < 0);
 
+    const moved = Math.hypot(this.x - this.lastX, this.y - this.lastY);
+    this.lastX = this.x;
+    this.lastY = this.y;
+    if (moved > 0.2) this.updateWalkAnimation(dt);
+    else this.sprite.setTexture(TEX.workerAnt);
+
     c.pheromones.deposit(layer, this.x, this.y, 0.06);
 
     if (this.mode === "seeking") {
@@ -116,6 +134,15 @@ export class WorkerAnt extends Entity {
 
     if (this.carriedDot) this.carriedDot.setPosition(this.x, this.y - 8).setDepth(this.y + 1);
     this.sprite.setDepth(this.y);
+  }
+
+  private updateWalkAnimation(dt: number): void {
+    this.walkTimer += dt;
+    if (this.walkTimer >= 0.12) {
+      this.walkTimer = 0;
+      this.walkFrame = (this.walkFrame + 1) % WALK_KEYS.length;
+      this.sprite.setTexture(WALK_KEYS[this.walkFrame]);
+    }
   }
 
   destroy(): void {

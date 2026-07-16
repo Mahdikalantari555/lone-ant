@@ -52,6 +52,7 @@ export class GameScene extends Phaser.Scene {
     this.spawnFood();
 
     colony.bootstrap();
+    this.nest.draw(colony.nestStage);
     this.workers = new WorkerManager(this, this.nest, this.grid, this.pheromones, colony);
     const hud = new Hud(this, colony);
     this.dayNight = new DayNight(this, this.nest, (label) => hud.setDayLabel(label));
@@ -81,10 +82,10 @@ export class GameScene extends Phaser.Scene {
     const dt = delta / 1000;
     this.player.update(dt);
     this.foods.forEach((f) => f.update(dt));
-    this.workers.update(dt, this.foods);
+    this.dayNight.update(time);
+    this.workers.update(dt, this.foods, this.dayNight.getNightFactor());
     this.spiders.update(dt);
     this.foliage.update(time);
-    this.dayNight.update(time);
 
     this.foodRespawnTimer += dt;
     if (this.foodRespawnTimer >= 15 && this.foods.length < 8) {
@@ -100,21 +101,26 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnTapMarker(x: number, y: number): void {
-    const ring = this.add
-      .image(x, y, TEX.dot)
-      .setTint(COLORS.pheromone.core)
-      .setBlendMode(Phaser.BlendModes.ADD)
-      .setScale(0.5)
-      .setAlpha(0.8)
-      .setDepth(50);
-    this.tweens.add({
-      targets: ring,
-      scale: 2.2,
-      alpha: 0,
-      duration: 350,
-      ease: "Quad.Out",
-      onComplete: () => ring.destroy(),
-    });
+    const rings = [6, 10, 14];
+    const alphas = [0.9, 0.55, 0.35];
+    const colors = [COLORS.pheromone.core, COLORS.pheromone.mid, COLORS.pheromone.deep];
+    for (let i = 0; i < rings.length; i++) {
+      const ring = this.add
+        .image(x, y, TEX.dot)
+        .setTint(colors[i])
+        .setBlendMode(Phaser.BlendModes.ADD)
+        .setScale(rings[i] / 8)
+        .setAlpha(alphas[i])
+        .setDepth(50);
+      this.tweens.add({
+        targets: ring,
+        scale: (rings[i] / 8) * 2.2,
+        alpha: 0,
+        duration: 380,
+        ease: "Quad.Out",
+        onComplete: () => ring.destroy(),
+      });
+    }
   }
 
   private tryPickup(): void {

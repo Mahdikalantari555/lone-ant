@@ -34,6 +34,8 @@ export const TEX = {
   groundTile4: "tex-ground-4",
   groundTile5: "tex-ground-5",
   groundTile6: "tex-ground-6",
+  hudSun: "tex-hud-sun",
+  hudMoon: "tex-hud-moon",
 } as const;
 
 export const GROUND_TILE_KEYS = [
@@ -50,6 +52,7 @@ export function generateTextures(scene: Phaser.Scene): void {
   generateNestTextures(scene);
   generatePheromoneDot(scene);
   generateDot(scene);
+  generateHudIcons(scene);
 }
 
 /* ─── Ant (16×16) ─────────────────────────────────────────────────── */
@@ -281,72 +284,90 @@ function generateGroundTiles(scene: Phaser.Scene): void {
   }
 }
 
-/* ─── Nest Mound (128×128, 4 stages) ─────────────────────────────── */
+/* ─── Nest Mound (128×128, 4 additive stages) ─────────────────────── */
 
 function generateNestTextures(scene: Phaser.Scene): void {
-  const stages = [
-    { key: TEX.nestL1, outer: 18 },
-    { key: TEX.nestL2, outer: 26 },
-    { key: TEX.nestL3, outer: 34 },
-    { key: TEX.nestL4, outer: 44 },
-  ];
+  // Stage 1: bare entrance — small mound, hole only
+  generateNestStage(scene, TEX.nestL1, {
+    outer: 16,
+    ringCount: 2,
+    showRim: false,
+    tunnelCount: 0,
+  });
+  // Stage 2: first ring
+  generateNestStage(scene, TEX.nestL2, {
+    outer: 24,
+    ringCount: 3,
+    showRim: true,
+    tunnelCount: 0,
+  });
+  // Stage 3: second ring + rim + one side tunnel
+  generateNestStage(scene, TEX.nestL3, {
+    outer: 34,
+    ringCount: 4,
+    showRim: true,
+    tunnelCount: 1,
+  });
+  // Stage 4: large mound + three side tunnels
+  generateNestStage(scene, TEX.nestL4, {
+    outer: 46,
+    ringCount: 4,
+    showRim: true,
+    tunnelCount: 3,
+  });
+}
 
-  for (const { key, outer } of stages) {
-    const s = 128;
-    const cx = 64;
-    const cy = 64;
-    const squash = 0.72;
-    const g = scene.make.graphics({ x: 0, y: 0 }, false);
+function generateNestStage(
+  scene: Phaser.Scene,
+  key: string,
+  opts: { outer: number; ringCount: number; showRim: boolean; tunnelCount: number },
+): void {
+  const s = 128;
+  const cx = 64;
+  const cy = 64;
+  const squash = 0.72;
+  const { outer, ringCount, showRim, tunnelCount } = opts;
+  const g = scene.make.graphics({ x: 0, y: 0 }, false);
 
-    // 1. Ground shadow footprint
-    g.fillStyle(COLORS.dirt.shadow, 1);
-    g.fillEllipse(cx, cy, (outer + 6) * 2, (outer + 6) * 2 * squash);
+  g.fillStyle(COLORS.dirt.shadow, 1);
+  g.fillEllipse(cx, cy, (outer + 6) * 2, (outer + 6) * 2 * squash);
 
-    // 2. Ring: outer
-    g.fillStyle(COLORS.nest.shadow, 1);
-    g.fillEllipse(cx, cy, outer * 2, outer * 2 * squash);
-
-    // 3. Ring: 0.78
-    g.fillStyle(COLORS.nest.base, 1);
-    g.fillEllipse(cx, cy, outer * 0.78 * 2, outer * 0.78 * 2 * squash);
-
-    // 4. Ring: 0.55
-    g.fillStyle(COLORS.nest.hi, 1);
-    g.fillEllipse(cx, cy, outer * 0.55 * 2, outer * 0.55 * 2 * squash);
-
-    // 5. Extra ring at level >= 3
-    if (outer >= 34) {
-      g.fillStyle(COLORS.nest.base, 1);
-      g.fillEllipse(cx, cy, outer * 0.4 * 2, outer * 0.4 * 2 * squash);
-    }
-
-    // 6. Entrance rim
-    g.fillStyle(COLORS.nest.rim, 1);
-    g.fillEllipse(cx, cy, outer * 0.22 * 2, outer * 0.22 * 2 * squash);
-
-    // 7. Entrance hole
-    g.fillStyle(COLORS.nest.hole, 1);
-    g.fillEllipse(cx, cy, outer * 0.16 * 2, outer * 0.16 * 2 * squash);
-
-    // 8. Extra tunnel mouths at level >= 3
-    if (outer >= 34) {
-      const tunnelCount = outer >= 44 ? 2 : 1;
-      const angles = [0.4, -0.5];
-      for (let t = 0; t < tunnelCount; t++) {
-        const angle = angles[t];
-        const dist = outer * 0.6;
-        const tx = cx + Math.cos(angle) * dist;
-        const ty = cy + Math.sin(angle) * dist * squash;
-        g.fillStyle(COLORS.nest.rim, 1);
-        g.fillEllipse(tx, ty, 6, 4);
-        g.fillStyle(COLORS.nest.hole, 1);
-        g.fillEllipse(tx, ty, 4, 3);
-      }
-    }
-
-    g.generateTexture(key, s, s);
-    g.destroy();
+  const ringPalette = [COLORS.nest.shadow, COLORS.nest.base, COLORS.nest.hi, COLORS.nest.base];
+  const ringScales = [1.0, 0.78, 0.55, 0.38];
+  for (let i = 0; i < ringCount; i++) {
+    const scale = ringScales[i] ?? 0.38;
+    g.fillStyle(ringPalette[i] ?? COLORS.nest.base, 1);
+    g.fillEllipse(cx, cy, outer * scale * 2, outer * scale * 2 * squash);
   }
+
+  if (showRim) {
+    g.fillStyle(COLORS.nest.rim, 1);
+    g.fillEllipse(cx, cy, outer * 0.24 * 2, outer * 0.24 * 2 * squash);
+  } else {
+    g.fillStyle(COLORS.nest.hi, 1);
+    g.fillEllipse(cx, cy, outer * 0.28 * 2, outer * 0.28 * 2 * squash);
+  }
+
+  g.fillStyle(COLORS.nest.hole, 1);
+  g.fillEllipse(cx, cy, outer * 0.16 * 2, outer * 0.16 * 2 * squash);
+
+  const angles = [0.35, -0.55, 1.1];
+  const dists = [0.58, 0.62, 0.55];
+  for (let t = 0; t < tunnelCount; t++) {
+    const angle = angles[t] ?? 0.4 + t * 0.7;
+    const dist = outer * (dists[t] ?? 0.6);
+    const tx = cx + Math.cos(angle) * dist;
+    const ty = cy + Math.sin(angle) * dist * squash;
+    const rw = 5 + t;
+    const rh = 3 + (t % 2);
+    g.fillStyle(COLORS.nest.rim, 1);
+    g.fillEllipse(tx, ty, rw * 2, rh * 2);
+    g.fillStyle(COLORS.nest.hole, 1);
+    g.fillEllipse(tx, ty, (rw - 2) * 2, (rh - 1) * 2);
+  }
+
+  g.generateTexture(key, s, s);
+  g.destroy();
 }
 
 /* ─── Pheromone Glow Dot ──────────────────────────────────────────── */
@@ -355,15 +376,17 @@ function generatePheromoneDot(scene: Phaser.Scene): void {
   const radius = 4;
   const s = radius * 2 + 2;
   const g = scene.make.graphics({ x: 0, y: 0 }, false);
+  const cx = s / 2;
+  const cy = s / 2;
 
-  // Outer glow
-  g.fillStyle(COLORS.pheromone.deep, 0.4);
-  g.fillEllipse(s / 2, s / 2, s, s);
+  g.fillStyle(COLORS.pheromone.deep, 0.35);
+  g.fillEllipse(cx, cy, s, s);
 
-  // Inner core (60% size)
-  const innerSize = s * 0.6;
+  g.fillStyle(COLORS.pheromone.mid, 0.7);
+  g.fillEllipse(cx, cy, s * 0.75, s * 0.75);
+
   g.fillStyle(COLORS.pheromone.core, 1);
-  g.fillEllipse(s / 2, s / 2, innerSize, innerSize);
+  g.fillEllipse(cx, cy, s * 0.5, s * 0.5);
 
   g.generateTexture(TEX.pheromoneDot, s, s);
   g.destroy();
@@ -378,4 +401,53 @@ function generateDot(scene: Phaser.Scene): void {
   g.fillCircle(s / 2, s / 2, s / 2);
   g.generateTexture(TEX.dot, s, s);
   g.destroy();
+}
+
+/* ─── HUD Sun / Moon (12×12) ──────────────────────────────────────── */
+
+function generateHudIcons(scene: Phaser.Scene): void {
+  (() => {
+    const s = 12;
+    const g = scene.make.graphics({ x: 0, y: 0 }, false);
+    g.fillStyle(COLORS.tint.noon, 1);
+    g.fillCircle(6, 6, 3);
+    g.lineStyle(1, COLORS.tint.dawn, 1);
+    g.lineBetween(6, 0, 6, 2);
+    g.lineBetween(6, 10, 6, 12);
+    g.lineBetween(0, 6, 2, 6);
+    g.lineBetween(10, 6, 12, 6);
+    g.lineBetween(2, 2, 3, 3);
+    g.lineBetween(9, 9, 10, 10);
+    g.lineBetween(9, 2, 10, 3);
+    g.lineBetween(2, 9, 3, 10);
+    g.generateTexture(TEX.hudSun, s, s);
+    g.destroy();
+  })();
+
+  (() => {
+    // Pixel crescent — only lit pixels, rest stays transparent
+    const s = 12;
+    const g = scene.make.graphics({ x: 0, y: 0 }, false);
+    const rows = [
+      ".....###....",
+      "....##.###..",
+      "...##...##..",
+      "..##.....#..",
+      "..##.....#..",
+      "..##.....#..",
+      "..##.....#..",
+      "...##...##..",
+      "....##.###..",
+      ".....###....",
+    ];
+    g.fillStyle(0xd8e0f5, 1);
+    for (let y = 0; y < rows.length; y++) {
+      const row = rows[y];
+      for (let x = 0; x < row.length; x++) {
+        if (row[x] === "#") g.fillRect(x, y + 1, 1, 1);
+      }
+    }
+    g.generateTexture(TEX.hudMoon, s, s);
+    g.destroy();
+  })();
 }

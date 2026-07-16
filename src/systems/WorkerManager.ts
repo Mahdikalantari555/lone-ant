@@ -6,10 +6,11 @@ import { Nest } from "../world/Nest";
 import { ColonyState } from "../state/ColonyState";
 import { Food } from "../entities/Food";
 import { TEX } from "./TextureFactory";
+import { COLORS } from "../config/palette";
 
 const MAX_WORKERS = 40;
 const MAX_GLOW_DOTS = 200;
-const DOT_DROP_INTERVAL = 0.4;
+const DOT_DROP_INTERVAL = 0.28;
 const DOT_FADE_DURATION = 30;
 
 interface GlowDot {
@@ -17,6 +18,7 @@ interface GlowDot {
   age: number;
   maxAge: number;
   active: boolean;
+  seq: number;
 }
 
 export class WorkerManager {
@@ -24,6 +26,7 @@ export class WorkerManager {
   private glowPool: GlowDot[] = [];
   private glowGroup: Phaser.GameObjects.Group;
   private dropTimers: number[] = [];
+  private dropSeq = 0;
 
   constructor(
     private scene: Phaser.Scene,
@@ -44,7 +47,7 @@ export class WorkerManager {
         .setAlpha(0)
         .setDepth(1)
         .setVisible(false);
-      this.glowPool.push({ img, age: 0, maxAge: DOT_FADE_DURATION, active: false });
+      this.glowPool.push({ img, age: 0, maxAge: DOT_FADE_DURATION, active: false, seq: 0 });
       this.glowGroup.add(img);
     }
   }
@@ -53,12 +56,14 @@ export class WorkerManager {
     for (const dot of this.glowPool) {
       if (!dot.active) {
         dot.img.setPosition(x, y);
-        dot.img.setAlpha(0.75 + Math.random() * 0.05);
+        dot.img.setAlpha(0.8);
+        dot.img.clearTint();
         dot.img.setVisible(true);
         dot.img.setDepth(y);
         dot.age = 0;
         dot.maxAge = maxAge;
         dot.active = true;
+        dot.seq = ++this.dropSeq;
         return dot;
       }
     }
@@ -101,7 +106,7 @@ export class WorkerManager {
     }
   }
 
-  update(dt: number, foods: Food[]): void {
+  update(dt: number, foods: Food[], nightFactor = 0): void {
     this.pheromones.decay(dt);
     this.reconcile();
 
@@ -116,7 +121,6 @@ export class WorkerManager {
       const w = this.workers[i];
       w.update(dt, ctx);
 
-      // Drop pheromone glow dots while moving
       if (w.mode === "seeking" || w.mode === "returning") {
         this.dropTimers[i] = (this.dropTimers[i] || 0) + dt;
         if (this.dropTimers[i] >= DOT_DROP_INTERVAL) {
@@ -132,10 +136,13 @@ export class WorkerManager {
       }
     }
 
-    this.updateGlowDots(dt);
+    this.updateGlowDots(dt, nightFactor);
   }
 
-  private updateGlowDots(dt: number): void {
+  private updateGlowDots(dt: number, nightFactor: number): void {
+    // Newest drops get a warm bloom at night (matches ref night trail)
+    const warmCutoff = this.dropSeq - 8;
+
     for (const dot of this.glowPool) {
       if (!dot.active) continue;
       dot.age += dt;
@@ -144,12 +151,31 @@ export class WorkerManager {
         dot.active = false;
         dot.img.setVisible(false);
         dot.img.setAlpha(0);
+        dot.img.clearTint();
         continue;
       }
-      // Linear fade with sine "breathe" on top
-      const baseAlpha = 0.8 * (1 - t);
+
+      const baseAlpha = 0.85 * (1 - t);
       const breathe = Math.sin(dot.age * 1.5) * 0.08;
-      dot.img.setAlpha(Math.max(0, baseAlpha + breathe));
+      let alpha = Math.max(0, baseAlpha + breathe);
+
+      const isRecent = dot.seq > warmCutoff && t < 0.35;
+      if (nightFactor > 0.15 && isRecent) {
+        const warm = nightFactor * (1 - t / 0.35);
+        alpha = Math.min(1, alpha + warm * 0.25);
+        // Blend cyan toward warmLight via tint
+        const mix = warm * 0.55;
+        const warmCol = Phaser.Display.Color.IntegerToColor(COLORS.tint.warmLight);
+        const coreCol = Phaser.Display.Color.IntegerToColor(COLORS.pheromone.core);
+        const r = Math.floor(coreCol.red * (1 - mix) + warmCol.red * mix);
+        const g = Math.floor(coreCol.green * (1 - mix) + warmCol.green * mix);
+        const b = Math.floor(coreCol.blue * (1 - mix) + warmCol.blue * mix);
+        dot.img.setTint(Phaser.Display.Color.GetColor(r, g, b));
+      } else {
+        dot.img.clearTint();
+      }
+
+      dot.img.setAlpha(alpha);
       dot.img.setDepth(dot.img.y);
     }
   }
